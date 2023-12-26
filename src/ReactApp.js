@@ -18,10 +18,12 @@ const dataView = (keys, data) => (
 )
 
 function CustomTabPanel(props) {
-  const { activeIndex, index, data, dataKey, path, onClick, ...other } = props;
+  const { activeIndex, index, data, searchData, dataKey, path, onClick, ...other } = props;
   const collectionPath = dataKey ? dataKey : path;
 
   const dataKeys = collections.find((element) => element.key == collectionPath || element.path == path).props
+
+  const [search, setSearch] = React.useState(searchData);
 
   return (
     <div
@@ -34,13 +36,19 @@ function CustomTabPanel(props) {
       {activeIndex === index && (
         <Box sx={{ p: 3 }} >
           <Box style={{ display: 'flex' }}>
-            <TextField id="outlined-basic" label="document ID" variant="outlined" />
+            <TextField
+              id="outlined-basic"
+              label={dataKey ? "Document path" : "Document ID"}
+              variant="outlined"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
             <Button
               variant="contained"
+              style={{ marginLeft: '10px' }}
               onClick={() => {
-                const input = document.getElementById('outlined-basic').value
-                const urlPath = dataKey ? `custom?path=${input}` : `${path}/${input}`
-                onClick(urlPath, collectionPath)
+                const urlPath = dataKey ? `custom?path=${search}` : `${path}/${search}`
+                onClick(urlPath, collectionPath, search)
               }}>
               Search
             </Button>
@@ -64,6 +72,7 @@ function TabProps(index) {
 function ReactApp() {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [data, setData] = React.useState({});
+  const [searchData, setSearchData] = React.useState({});
 
   const handleChange = (event, newIndex) => {
     setActiveIndex(newIndex);
@@ -76,12 +85,13 @@ function ReactApp() {
    * @param {string} urlPath 
    * @param {string} collectionPath 
    */
-  function getData(urlPath, collectionPath) {
+  function getData(urlPath, collectionPath, searchQuery) {
     fetch(`http://localhost:3000/${urlPath}`)
       .then(async (response) => {
         var body = await response.json();
         console.log(JSON.stringify(body))
         setData({ [collectionPath]: body, ...data })
+        setSearchData({ [collectionPath]: searchQuery, ...searchData })
       })
       .catch(err => {
         console.log(err)
@@ -103,9 +113,10 @@ function ReactApp() {
               activeIndex={activeIndex}
               index={index}
               data={collection.path == 'custom' ? data[collection.key] : data[collection.path]}
+              searchData={collection.path == 'custom' ? searchData[collection.key] : searchData[collection.path]}
               dataKey={collection.key}
               path={collection.path}
-              onClick={(urlPath, collectionPath) => getData(urlPath, collectionPath)}
+              onClick={(urlPath, collectionPath, searchQuery) => getData(urlPath, collectionPath, searchQuery)}
             />
           ))}
         </Box>
