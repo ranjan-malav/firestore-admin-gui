@@ -21,7 +21,7 @@ function CustomTabPanel(props) {
   const { activeIndex, index, data, searchData, dataKey, path, onClick, ...other } = props;
   const collectionPath = dataKey ? dataKey : path;
 
-  const dataKeys = collections.find((element) => element.key == collectionPath || element.path == path).props
+  const dataKeys = collections.find((element) => element.key === collectionPath || element.path === path).props
 
   const [search, setSearch] = React.useState(searchData);
 
@@ -139,8 +139,8 @@ function ReactApp() {
             <CustomTabPanel
               activeIndex={activeIndex}
               index={index}
-              data={collection.path == 'custom' ? data[collection.key] : data[collection.path]}
-              searchData={collection.path == 'custom' ? searchData[collection.key] : searchData[collection.path]}
+              data={collection.path === 'custom' ? data[collection.key] : data[collection.path]}
+              searchData={collection.path === 'custom' ? searchData[collection.key] : searchData[collection.path]}
               dataKey={collection.key}
               path={collection.path}
               onClick={(urlPath, collectionPath, searchQuery) => getData(urlPath, collectionPath, searchQuery)}
