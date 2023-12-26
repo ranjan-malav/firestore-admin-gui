@@ -48,4 +48,4 @@ Contributions are welcome! Please follow the guidelines in [CONTRIBUTING.md](CON
 If you encounter any issues or have suggestions, please create an issue.
 
 ## License
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
