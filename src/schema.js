@@ -25,7 +25,7 @@ export const collections = [
   },
   // Sample schema for nested collection, in this path value should be kept "custom"
   // key is used for storing the data in state, change as per your needs
-  // For nested collections, you have to enter full path in the input
+  // For nested collections, you have to enter full path in the input, e.g. "users/xyz/roles/123"
   {
     "path": "custom",
     "key": "food_items",
