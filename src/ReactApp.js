@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import './App.css';
-import { Button, TextField } from '@mui/material';
+import { Alert, Button, Snackbar, TextField } from '@mui/material';
 import { collections } from './schema';
 
 const dataView = (keys, data) => (
@@ -25,6 +25,16 @@ function CustomTabPanel(props) {
 
   const [search, setSearch] = React.useState(searchData);
 
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
+
   return (
     <div
       role="tabpanel"
@@ -42,6 +52,7 @@ function CustomTabPanel(props) {
               variant="outlined"
               value={search}
               onChange={e => setSearch(e.target.value)}
+              style={{ minWidth: '300px' }}
             />
             <Button
               variant="contained"
@@ -54,9 +65,24 @@ function CustomTabPanel(props) {
               Search
             </Button>
           </Box>
-          <Box style={{ display: 'flex', marginTop: '10px' }}>
-            {dataView(dataKeys, data)}
-          </Box>
+          {data ? (<Box style={{ display: 'flex', marginTop: '10px' }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                navigator.clipboard.writeText(JSON.stringify(data))
+                setOpenSnackbar(true)
+              }}>
+              Copy
+            </Button>
+            <div style={{ marginLeft: '10px' }}>
+              {dataView(dataKeys, data)}
+            </div>
+            <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                Copied to Clipboard!
+              </Alert>
+            </Snackbar>
+          </Box>) : null}
         </Box>
       )}
     </div>
