@@ -7,8 +7,6 @@ import './App.css';
 import { Button, TextField } from '@mui/material';
 import { collections } from './schema';
 
-//admins - alovelace, users - 2bRwvKD2z4QPNLpxRfwRxbjJN2r1
-
 const dataView = (keys, data) => (
   data ? (<Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'start' }}>
     {
@@ -20,24 +18,35 @@ const dataView = (keys, data) => (
 )
 
 function CustomTabPanel(props) {
-  const { value, index, data, collection, onClick, ...other } = props;
+  const { activeIndex, index, data, dataKey, path, onClick, ...other } = props;
+  const collectionPath = dataKey ? dataKey : path;
+
+  const dataKeys = collections.find((element) => element.key == collectionPath || element.path == path).props
 
   return (
     <div
       role="tabpanel"
-      hidden={value !== index}
+      hidden={activeIndex !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
+      {activeIndex === index && (
         <Box sx={{ p: 3 }} >
           <Box style={{ display: 'flex' }}>
             <TextField id="outlined-basic" label="document ID" variant="outlined" />
-            <Button variant="contained" onClick={() => onClick(document.getElementById('outlined-basic').value)}>Search</Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const input = document.getElementById('outlined-basic').value
+                const urlPath = dataKey ? `custom?path=${input}` : `${path}/${input}`
+                onClick(urlPath, collectionPath)
+              }}>
+              Search
+            </Button>
           </Box>
           <Box style={{ display: 'flex', marginTop: '10px' }}>
-            {dataView(collections[collection], data)}
+            {dataView(dataKeys, data)}
           </Box>
         </Box>
       )}
@@ -45,7 +54,7 @@ function CustomTabPanel(props) {
   );
 }
 
-function a11yProps(index) {
+function TabProps(index) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
@@ -53,19 +62,26 @@ function a11yProps(index) {
 }
 
 function ReactApp() {
-  const [value, setValue] = React.useState(0);
+  const [activeIndex, setActiveIndex] = React.useState(0);
   const [data, setData] = React.useState({});
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleChange = (event, newIndex) => {
+    setActiveIndex(newIndex);
   };
 
-  function getData(key, uid) {
-    fetch(`http://localhost:3000/${key}?uid=${uid}`)
+  /**
+   * Fetches data from the API, 
+   * urlPath is attached to the base API, e.g. users/xyz or users/xyz/roles/123
+   * collectionPath is used to keep store data, e.g. users
+   * @param {string} urlPath 
+   * @param {string} collectionPath 
+   */
+  function getData(urlPath, collectionPath) {
+    fetch(`http://localhost:3000/${urlPath}`)
       .then(async (response) => {
         var body = await response.json();
         console.log(JSON.stringify(body))
-        setData({ [key]: body, ...data })
+        setData({ [collectionPath]: body, ...data })
       })
       .catch(err => {
         console.log(err)
@@ -78,17 +94,18 @@ function ReactApp() {
       <header className="App-header">
         <Box sx={{ width: '100%', flex: 1 }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-              {Object.entries(collections).map(([key], index) => <Tab label={key} {...a11yProps(index)} />)}
+            <Tabs value={activeIndex} onChange={handleChange} aria-label="tabs">
+              {collections.map((collection, index) => <Tab label={collection.label} {...TabProps(index)} />)}
             </Tabs>
           </Box>
-          {Object.entries(collections).map(([key], index) => (
+          {collections.map((collection, index) => (
             <CustomTabPanel
-              value={value}
+              activeIndex={activeIndex}
               index={index}
-              data={data[key]}
-              collection={key}
-              onClick={(uid) => getData(key, uid)}
+              data={collection.path == 'custom' ? data[collection.key] : data[collection.path]}
+              dataKey={collection.key}
+              path={collection.path}
+              onClick={(urlPath, collectionPath) => getData(urlPath, collectionPath)}
             />
           ))}
         </Box>
