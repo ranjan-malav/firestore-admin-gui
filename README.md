@@ -1,4 +1,4 @@
-# Firestore GUI Access App
+# Firestore Admin GUI
 
 <img width="374" alt="Screenshot 2023-12-26 at 8 32 42 PM" src="https://github.com/ranjan-malav/firestore-admin-gui/assets/19403844/09469ea1-1d10-46d8-8dbb-bd187fd8c432">
 
