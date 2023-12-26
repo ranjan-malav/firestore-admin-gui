@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import './App.css';
 import { Alert, Button, Snackbar, TextField } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { collections } from './schema';
 
 const dataView = (keys, data) => (
@@ -18,7 +19,7 @@ const dataView = (keys, data) => (
 )
 
 function CustomTabPanel(props) {
-  const { activeIndex, index, data, searchData, dataKey, path, onClick, ...other } = props;
+  const { activeIndex, index, data, searchData, loading, dataKey, path, onClick, ...other } = props;
   const collectionPath = dataKey ? dataKey : path;
 
   const dataKeys = collections.find((element) => element.key === collectionPath || element.path === path).props
@@ -54,16 +55,17 @@ function CustomTabPanel(props) {
               onChange={e => setSearch(e.target.value)}
               style={{ minWidth: '300px' }}
             />
-            <Button
+            <LoadingButton
               variant="contained"
               style={{ marginLeft: '10px' }}
+              loading={loading}
               onClick={() => {
                 if (!search) return
                 const urlPath = dataKey ? `custom?path=${search}` : `${path}/${search}`
                 onClick(urlPath, collectionPath, search)
               }}>
               Search
-            </Button>
+            </LoadingButton>
           </Box>
           {data ? (<Box style={{ display: 'flex', marginTop: '10px' }}>
             <Button
@@ -99,6 +101,7 @@ function TabProps(index) {
 function ReactApp() {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [data, setData] = React.useState({});
+  const [loading, setLoading] = React.useState({});
   const [searchData, setSearchData] = React.useState({});
 
   const handleChange = (event, newIndex) => {
@@ -113,15 +116,18 @@ function ReactApp() {
    * @param {string} collectionPath 
    */
   function getData(urlPath, collectionPath, searchQuery) {
+    setLoading({ ...loading, [collectionPath]: true })
     fetch(`http://localhost:3000/${urlPath}`)
       .then(async (response) => {
         var body = await response.json();
         console.log(JSON.stringify(body))
-        setData({ [collectionPath]: body, ...data })
-        setSearchData({ [collectionPath]: searchQuery, ...searchData })
+        setData({ ...data, [collectionPath]: body })
+        setSearchData({ ...searchData, [collectionPath]: searchQuery })
+        setLoading({ ...loading, [collectionPath]: false })
       })
       .catch(err => {
         console.log(err)
+        setLoading({ ...loading, [collectionPath]: false })
         alert(err)
       })
   }
@@ -141,6 +147,7 @@ function ReactApp() {
               index={index}
               data={collection.path === 'custom' ? data[collection.key] : data[collection.path]}
               searchData={collection.path === 'custom' ? searchData[collection.key] : searchData[collection.path]}
+              loading={collection.path === 'custom' ? loading[collection.key] : loading[collection.path]}
               dataKey={collection.key}
               path={collection.path}
               onClick={(urlPath, collectionPath, searchQuery) => getData(urlPath, collectionPath, searchQuery)}
