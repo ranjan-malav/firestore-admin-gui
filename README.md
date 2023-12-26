@@ -42,7 +42,7 @@ The Firebase Admin Console has a few issues that this app attempts to address.
 - Allow queries
 
 ##  Contributing
-Contributions are welcome! Please follow the guidelines in CONTRIBUTING.md before submitting a pull request.
+Contributions are welcome! Please follow the guidelines in [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
 
 ## Issues
 If you encounter any issues or have suggestions, please create an issue.
