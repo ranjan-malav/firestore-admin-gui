@@ -47,6 +47,7 @@ function CustomTabPanel(props) {
               variant="contained"
               style={{ marginLeft: '10px' }}
               onClick={() => {
+                if (!search) return
                 const urlPath = dataKey ? `custom?path=${search}` : `${path}/${search}`
                 onClick(urlPath, collectionPath, search)
               }}>
