@@ -1,6 +1,6 @@
 # Firestore Admin GUI
 
-<img width="374" alt="Screenshot 2023-12-26 at 8 32 42 PM" src="https://github.com/ranjan-malav/firestore-admin-gui/assets/19403844/09469ea1-1d10-46d8-8dbb-bd187fd8c432">
+<img width="439" alt="Screenshot 2023-12-29 at 5 13 59 PM" src="https://github.com/ranjan-malav/firestore-admin-gui/assets/19403844/1c0af0fd-6ef6-4f90-a470-14271d17b028">
 
 ## Overview
 
